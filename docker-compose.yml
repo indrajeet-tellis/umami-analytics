@@ -1,7 +1,6 @@
----
 services:
   umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
+    image: ghcr.io/umami-software/umami:mysql-latest  # ✅ Use MySQL-compatible Umami image
     ports:
       - "3000:3000"
     environment:
@@ -18,19 +17,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
   db:
-    image: postgres:15-alpine
+    image: mysql:8.0 
     environment:
-      POSTGRES_DB: umami
-      POSTGRES_USER: umami
-      POSTGRES_PASSWORD: umami
+      MYSQL_DATABASE: railway
+      MYSQL_USER: root
+      MYSQL_PASSWORD: QwJoUkIpbOWVCdvxzOEnwRStcNhLmzzZ
+      MYSQL_ROOT_PASSWORD: QwJoUkIpbOWVCdvxzOEnwRStcNhLmzzZ
     volumes:
-      - umami-db-data:/var/lib/postgresql/data
+      - umami-db-data:/var/lib/mysql
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 5s
       retries: 5
+
 volumes:
   umami-db-data:
